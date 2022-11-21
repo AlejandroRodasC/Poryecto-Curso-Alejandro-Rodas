@@ -10,7 +10,9 @@ class Connection:
         return 'Se ha cerrado la base de datos'
     
     def request_movies(cursor):
-        cursor.execute('Select * from Movies')
+        request = ( 'select Movies.id_movie , Movies.title , Movies.poster , Movies.clasif , Functions.id_funct , Functions.date_funct from Movies ' 
+        'INNER JOIN Functions on Movies.id_movie = Functions.ID_movie')
+        cursor.execute(request)
         return
     
     def request_functions(cursor):

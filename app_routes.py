@@ -17,16 +17,8 @@ def list_movies():
     movies = curs_movies.fetchall()
     curs_movies.close()
 
-    Connection.request_functions(curs_functions)
-    functions = curs_functions.fetchall()
-    curs_functions.close()
-
     Connection.disconnect_db(conn)
-
-    return f""" PELICULAS
-                {movies} 
-                FUNCIONES:
-                {functions}"""
+    return movies
 
 @app.route('/register_user', methods = ['POST'])    
 def register_user():
