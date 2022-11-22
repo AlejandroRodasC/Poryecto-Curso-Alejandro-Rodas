@@ -33,12 +33,19 @@ class Connection:
         request = 'SELECT * FROM Users WHERE email = %s'
         cursor.execute(request,data)
 
-    def seat_verification(seat):
+    def seat_verification(data):
         connec = conn.connect(host='localhost', user='root', passwd = 'alejandro', db='cine')
-        request = 'SELECT * FROM Tickets where seat = %s'
+        request = 'SELECT * FROM Tickets where seat = %s and ID_FUNC = %s'
         cursor = connec.cursor()
-        cursor.execute(request,seat)
-        if cursor.fetchone() is not None:
-            return True
+        cursor.execute(request,data)
+        if cursor.fetchone() is not None: #If the cursor is not emprty 
+            return True #return True to say that the seat is used
         else:
             return False
+    
+    def buy_the_ticket(data):
+        connec = conn.connect(host='localhost', user='root', passwd = 'alejandro', db='cine')
+        request = 'INSERT INTO Tickets (ID_USER , ID_MOV , ID_FUNC , seat , created_at) VALUES (%s,%s,%s,%s,%s)'
+        cursor = connec.cursor()
+        cursor.execute(request,data)
+        connec.commit()

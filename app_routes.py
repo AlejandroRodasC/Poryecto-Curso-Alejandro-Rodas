@@ -1,11 +1,12 @@
 from flask import Flask, request, jsonify
 import jwt
-import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from connection_db import Connection
+from methods import Methods
 from functools import wraps
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secretkey'
+conn = Connection.connect_db()
 
 def token_is_requiered(tok):
     @wraps(tok)
@@ -27,16 +28,19 @@ def token_is_requiered(tok):
 def index():
     return 'This is the start of the APP.'
 
+@app.route('/exit')
+def exit():
+    Connection.disconnect_db(conn)
+    return 'Come back soon :D'
+
 @app.route('/movies_available')
-def list_movies():
-    conn = Connection.connect_db()
+def list_movies():   
     curs_movies = conn.cursor(dictionary= True,buffered=True)
 
     Connection.request_movies(curs_movies)
     movies = curs_movies.fetchall()
     curs_movies.close()
 
-    Connection.disconnect_db(conn)
     return movies
 
 @app.post('/register_user')    
@@ -45,16 +49,14 @@ def register_user():
     ls_name = request.form['last_name']
     passwd = request.form['password']
     email = request.form['email']
-    pnum= int(request.form['phone_number'])
+    pnum= request.form['phone_number']
     created_at = datetime.now()
 
     data = (name, ls_name,passwd,email,pnum,created_at)
-    conn = Connection.connect_db()
     curs_users = conn.cursor()
     Connection.insert_users(conn,curs_users,data)
 
     curs_users.close()
-    Connection.disconnect_db(conn)
     return 'The user is registered'
 
 @app.post('/login')
@@ -62,7 +64,6 @@ def login():
     passwd = request.form['password']
     email = request.form['email']
     data = (email, passwd)
-    conn = Connection.connect_db()
     curs_login = conn.cursor()
     Connection.login(curs_login,data)
     user = curs_login.fetchone()
@@ -80,27 +81,31 @@ def buy_tickets():
     dict_user =  jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
     email_user = str(dict_user['user_email'])
     data_user = (email_user,)
-    conn = Connection.connect_db()
     curs_user = conn.cursor(dictionary=True)
     Connection.user(curs_user,data_user)
 
     user = curs_user.fetchone()
-    id = user['id_user']
+    id_user = int(user['id_user'])
     id_movie =  int(request.form['id_movie'])
     id_function = int(request.form['id_function'])
+    created_at = datetime.now()
     seating_string = request.form['seating']
     seating_array = seating_string.split(',')
 
     for seat in seating_array:
-        pat = r"[A-E][0-9]$"
-        
-        if re.match(pat,seat):
-            pass
+        flag = Methods.Review_seating(seat)
+        if flag:
+            return f'The seat {seat} does not exist'
         else:
-            if '10' in seat :
-                pass
-            else:
-                return f'The seat {seat} does not exist.'
-
-    return jsonify({'message' : 'You can buy tickets'})
+            data_seat = (seat, id_function)
+            flag_seat_used = Connection.seat_verification(data_seat)
+        
+        if flag_seat_used:
+            return f'The seat {seat} is used.'
+    
+    for seat in seating_array:
+        data_ticket = (id_user,id_movie,id_function,seat,created_at)
+        Connection.buy_the_ticket(data_ticket)
+    
+    return f'The tickets were bought'
 
