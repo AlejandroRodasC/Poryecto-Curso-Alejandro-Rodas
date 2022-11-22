@@ -93,7 +93,7 @@ def buy_tickets():
     seating_array = seating_string.split(',')
 
     for seat in seating_array:
-        flag = Methods.Review_seating(seat)
+        flag = Methods.Check_seating(seat)
         if flag:
             return f'The seat {seat} does not exist'
         else:
@@ -123,3 +123,25 @@ def consult_tickets():
     curs_tickets.close()
 
     return tickets
+
+@app.post('/delete_ticket')
+@token_is_requiered
+def delete_ticket():
+    id_ticket = int(request.form['id_ticket'])
+    token = request.args.get('Token')
+    dict_user =  jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+    id_user = int(dict_user['id_user'])
+    data_ticket = (id_ticket,)
+    date_now = datetime.now()
+    data_ticket_elim = (id_user,id_ticket)
+
+    flag_date = Connection.check_ticket_date(data_ticket,date_now)
+    flag_ticket_property = Connection.verify_property_ticket(data_ticket_elim)
+    
+    if flag_ticket_property:
+        return f'The ticket with id {id_ticket} does not belong to user with id {id_user}'
+    elif flag_date:
+        return f'The ticket with the id {id_ticket} has already expired. You can not delete it.'
+    else:        
+        Connection.delete_ticket(data_ticket_elim)
+        return f'The ticket with the id {id_ticket} was deleted.'
