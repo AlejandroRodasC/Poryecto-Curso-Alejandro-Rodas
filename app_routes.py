@@ -64,12 +64,12 @@ def login():
     passwd = request.form['password']
     email = request.form['email']
     data = (email, passwd)
-    curs_login = conn.cursor()
+    curs_login = conn.cursor(dictionary=True)
     Connection.login(curs_login,data)
     user = curs_login.fetchone()
-    
+    id_user = user['id_user']
     if user is not None:
-        token =  jwt.encode({'user_email': email }, app.config['SECRET_KEY'], algorithm='HS256')
+        token =  jwt.encode({'user_email': email , 'id_user' : id_user}, app.config['SECRET_KEY'], algorithm='HS256')
         return jsonify({'token': token})
     else:
         return 'The user does not exist.'
@@ -109,3 +109,17 @@ def buy_tickets():
     
     return f'The tickets were bought'
 
+@app.get('/consult_tickets')
+@token_is_requiered
+def consult_tickets():
+    token = request.args.get('Token')
+    dict_user =  jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+    id_user = int(dict_user['id_user'])
+    data = (id_user,)
+    curs_tickets = conn.cursor(dictionary= True,buffered=True)
+
+    Connection.consult_tickets(curs_tickets,data)
+    tickets = curs_tickets.fetchall()
+    curs_tickets.close()
+
+    return tickets

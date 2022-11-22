@@ -49,3 +49,9 @@ class Connection:
         cursor = connec.cursor()
         cursor.execute(request,data)
         connec.commit()
+    
+    def consult_tickets(cursor,data):
+        request = (' SELECT Tickets.id_ticket , Tickets.seat , Functions.id_funct, Functions.date_funct,' 
+                    'Movies.id_movie, Movies.title , Movies.poster , Movies.clasif from Tickets inner join Functions on Tickets.ID_FUNC = Functions.id_funct '
+                    'inner join Movies where Tickets.ID_USER = %s and Functions.Id_movie = Movies.id_movie')
+        cursor.execute(request,data)
