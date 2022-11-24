@@ -1,9 +1,5 @@
-from datetime import datetime
-import random
 import re
-
 from connection_db import Connection
-user_data = None
 
 def register_user(
     id_user,
@@ -14,7 +10,6 @@ def register_user(
     phone_number,
     created_at       
 ):
-    global user_data
     if check_name_length(name_user):
         raise Exception('The username is longer than 40 characters.')
     if check_last_name_length(last_name):

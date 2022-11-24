@@ -1,6 +1,5 @@
 from user import login
 from user_factory import UserFactory
-from connection_db import Connection
 import pytest
 
 class TestLoginUser:
