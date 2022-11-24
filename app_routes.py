@@ -14,12 +14,12 @@ def token_is_requiered(tok):
         token  = request.args.get('Token')
 
         if not token:
-           return jsonify({'message' : 'Token is missing', 'error': 403}) 
+           return jsonify({'message' : 'Token is missing', 'error': 403}),403 
 
         try:
             data =  jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
         except:
-            return jsonify({'message' : 'Token is invalid', 'error': 403})
+            return jsonify({'message' : 'Token is invalid', 'error': 403}),403
 
         return tok(*args, **Kwargs)
     return decorated
@@ -145,3 +145,8 @@ def delete_ticket():
     else:        
         Connection.delete_ticket(data_ticket_elim)
         return f'The ticket with the id {id_ticket} was deleted.'
+
+
+@app.errorhandler(404)
+def invalid_token(error):
+    return 'Endpoint not found',404
