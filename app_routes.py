@@ -14,12 +14,12 @@ def token_is_requiered(tok):
         token  = request.args.get('Token')
 
         if not token:
-           return jsonify({'message' : 'Token is missing'}) 
+           return jsonify({'message' : 'Token is missing', 'error': 403}) 
 
         try:
             data =  jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
         except:
-            return jsonify({'message' : 'Token is invalid'})
+            return jsonify({'message' : 'Token is invalid', 'error': 403})
 
         return tok(*args, **Kwargs)
     return decorated
