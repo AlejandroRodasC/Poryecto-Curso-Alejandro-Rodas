@@ -1,5 +1,5 @@
 from connection_db import Connection
-
+from datetime import datetime
 ticket_data = None
 
 def buy_ticket(
@@ -26,6 +26,15 @@ def request_tickets(ID_USER):
         raise Exception('The user has not tickets purchased.')
 
     return 'Here are your tickets'
+
+def delete_tickets(ID_USER,id_ticket):
+    if ticket_ownership(ID_USER,id_ticket):
+        raise Exception(f'The ticket with id {id_ticket} does not belong to user with id {ID_USER}')
+
+    if ticket_date(id_ticket):
+        raise Exception(f'The ticket with the id {id_ticket} has already expired. You can not delete it.')
+
+    return 'The tickets were eliminated'
 
 def check_id_user(ID_USER):
     data =  (ID_USER,)
@@ -82,3 +91,14 @@ def check_user_tickets(ID_USER):
         return True
     else: 
         return False
+
+def ticket_ownership(ID_USER, id_ticket):
+    data = (ID_USER,id_ticket)
+    flag = Connection.verify_ticket_ownership(data)
+    return flag
+
+def ticket_date(id_ticket):
+    data = (id_ticket,)
+    date = datetime.now()
+    flag_date = Connection.check_ticket_date(data,date)
+    return flag_date

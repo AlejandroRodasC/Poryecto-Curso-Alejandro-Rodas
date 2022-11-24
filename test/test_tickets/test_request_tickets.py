@@ -19,7 +19,7 @@ class TestRequestTickets:
     
     #Edge case
     def test_the_user_does_not_have_tickets(self):
-        ID_USER = 999
+        ID_USER = 999 # Incorrect id user
         with pytest.raises(Exception) as error:
             message = request_tickets(ID_USER)
 

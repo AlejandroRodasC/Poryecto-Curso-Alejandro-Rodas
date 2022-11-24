@@ -64,7 +64,7 @@ class Connection:
         else:
             return False
 
-    def verify_property_ticket(data):
+    def verify_ticket_ownership(data):
         connec = conn.connect(host='localhost', user='root', passwd = 'alejandro', db='cine')
         request = ('Select * from Tickets where Tickets.ID_USER = %s and Tickets.id_ticket = %s')
         cursor = connec.cursor(dictionary=True)

@@ -136,7 +136,7 @@ def delete_ticket():
     data_ticket_elim = (id_user,id_ticket)
 
     flag_date = Connection.check_ticket_date(data_ticket,date_now)
-    flag_ticket_property = Connection.verify_property_ticket(data_ticket_elim)
+    flag_ticket_property = Connection.verify_ticket_ownership(data_ticket_elim)
     
     if flag_ticket_property:
         return f'The ticket with id {id_ticket} does not belong to user with id {id_user}'

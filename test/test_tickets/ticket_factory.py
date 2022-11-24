@@ -13,7 +13,7 @@ class TicketFactory:
         'ID_USER' : fake.random_int(100,999),
         'ID_MOV' :  fake.random_int(100,999),
         'ID_FUNC' :  fake.random_int(100,999),
-        'seat' : 'A1',
+        'seat' : 'C9',
         'created_at' : created_at
         }
 

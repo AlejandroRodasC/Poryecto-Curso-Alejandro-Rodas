@@ -35,15 +35,15 @@ class TestBuyTicket:
             assert str(error.value) == 'The user does not exist.'
     
     def test_movie_id_does_not_exist(self):
-        self.ticket_data['ID_USER'] = 1
+        self.ticket_data['ID_USER'] = 1 #Correct Id user
         with pytest.raises(Exception) as error:
             message = buy_ticket(**self.ticket_data)
 
             assert str(error.value) == 'The movie does not exist.'
     
     def test_function_id_does_not_exist(self):
-        self.ticket_data['ID_USER'] = 1
-        self.ticket_data['ID_MOV'] = 11
+        self.ticket_data['ID_USER'] = 1 #Correct id_user
+        self.ticket_data['ID_MOV'] = 11 #Correct id movie
         ID_FUNC = self.ticket_data['ID_FUNC']
         with pytest.raises(Exception) as error:
             message = buy_ticket(**self.ticket_data)
@@ -51,9 +51,9 @@ class TestBuyTicket:
             assert str(error.value) == f'The movie does not have a function with ID = {ID_FUNC}'
     
     def test_seat_is_used(self):
-        self.ticket_data['ID_USER'] = 1 
-        self.ticket_data['ID_MOV'] = 11 
-        self.ticket_data['ID_FUNC'] = 555
+        self.ticket_data['ID_USER'] = 1 #Correct id user
+        self.ticket_data['ID_MOV'] = 11 #Correct id movie
+        self.ticket_data['ID_FUNC'] = 555 #Correct id function
         ID_FUNC = self.ticket_data['ID_FUNC']
         ID_MOV = self.ticket_data['ID_MOV']
         seat = self.ticket_data['seat']
