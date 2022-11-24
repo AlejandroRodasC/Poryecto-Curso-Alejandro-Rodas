@@ -21,6 +21,12 @@ def buy_ticket(
 
     return 'The ticket was bought.'
 
+def request_tickets(ID_USER):
+    if check_user_tickets(ID_USER):
+        raise Exception('The user has not tickets purchased.')
+
+    return 'Here are your tickets'
+
 def check_id_user(ID_USER):
     data =  (ID_USER,)
     request =  'Select * from Users where id_user = %s'
@@ -64,3 +70,15 @@ def check_seat(ID_FUNC, seat):
     data = (seat, ID_FUNC)
     flag_seat_used = Connection.seat_verification(data)
     return flag_seat_used
+
+def check_user_tickets(ID_USER):
+    data = (ID_USER,)
+    conn = Connection.connect_db()
+    cursor_ticket = conn.cursor(dictionary=True)
+    Connection.consult_tickets(cursor_ticket,data)
+    cursor_ticket.fetchall()
+    Connection.disconnect_db(conn)
+    if cursor_ticket is None:
+        return True
+    else: 
+        return False
