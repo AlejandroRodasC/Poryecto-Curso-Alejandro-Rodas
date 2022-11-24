@@ -1,6 +1,8 @@
 from datetime import datetime
 import random
 import re
+
+from connection_db import Connection
 user_data = None
 
 def register_user(
@@ -23,20 +25,24 @@ def register_user(
         raise Exception('Incorrect email format.')
     if check_phone_number(phone_number):
         raise Exception('The phone number has characters that are not digits or is longer than 30 characters.')
-    id_user= random.randint(0,999)
-    created_at =  datetime.now()
-    user_data = {
-        'id_user' : id_user,
-        'name_user' : name_user,
-        'last_name' : last_name,
-        'password_user' : password_user,
-        'email' : email,
-        'phone_number' : phone_number,
-        'created_at' : created_at
-    }
-   
+    
     return 'User succesfully registered'
 
+def login(
+    id_user,
+    name_user ,
+    last_name ,
+    password_user ,
+    email ,
+    phone_number,
+    created_at 
+):
+    if check_email_in_database(email):
+        raise Exception(f'Does not exist a user with the email {email}.')
+    if check_password_for_email_in_database(email,password_user):
+        raise Exception('Password is incorrect.')
+
+    return f'Welcome {name_user}.'
 
 def check_name_length(name_user):
     if len(name_user)>40:
@@ -68,3 +74,27 @@ def check_phone_number(phone_number):
     if len(phone_number) > 15:
         return True
     return False
+
+def check_email_in_database(email):
+    data = (email,)
+    conn = Connection.connect_db()
+    curs_user = conn.cursor(dictionary=True)
+    Connection.user(curs_user,data)
+    curs_user.fetchone()
+    Connection.disconnect_db(conn)
+    if curs_user is not None:
+        return False
+    else:
+        return True
+
+def check_password_for_email_in_database(email,password):
+    data = (email,password)
+    conn = Connection.connect_db()
+    curs_user = conn.cursor(dictionary=True)
+    Connection.login(curs_user,data)
+    curs_user.fetchone()
+    Connection.disconnect_db(conn)
+    if curs_user is not None:
+        return False
+    else:
+        return True
