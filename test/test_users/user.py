@@ -34,7 +34,7 @@ def register_user(
         'phone_number' : phone_number,
         'created_at' : created_at
     }
-
+   
     return 'User succesfully registered'
 
 
